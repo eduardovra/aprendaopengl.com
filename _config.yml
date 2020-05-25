@@ -21,8 +21,8 @@
 title: AprendaOpenGL.com
 description: >- # this means to ignore newlines until "baseurl:"
   Tradução em Português (brasileiro) do site learnopengl.com
-baseurl: "" # the subpath of your site, e.g. /blog
-url: "" # the base hostname & protocol for your site, e.g. http://example.com
+#baseurl: "" # the subpath of your site, e.g. /blog
+#url: "" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: eduardovra
 github_username:  eduardovra
 
