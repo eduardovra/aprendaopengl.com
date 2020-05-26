@@ -18,7 +18,7 @@
 # You can create any custom variable you would like, and they will be accessible
 # in the templates via {{ site.myvariable }}.
 
-title: AprendaOpenGL.com
+title: AprendaOpenGL.com - LearnOpenGL.com
 description: >- # this means to ignore newlines until "baseurl:"
   Tradução em Português (brasileiro) do site learnopengl.com
   Aprenda OpenGL - tutoriais completos para aprendizado de OpenGL moderno

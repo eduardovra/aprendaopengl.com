@@ -3,6 +3,45 @@
 
 @import "minima";
 
+@import url(https://fonts.googleapis.com/css?family=Gudea);
+
+body {
+    font-family: Gudea, sans-serif;
+    font-size: 16px;
+    color: #111;
+    background-color: #eee;
+    margin: 0px;
+    padding: 0px;
+    background-image: url('img/header_repeat2.png');
+    background-repeat: repeat-x;
+}
+
+h1 {
+    color: #303236;
+    margin-bottom: -10px;
+ }
+ 
+ h2 {
+     /*color: #394666;*/
+     color: #37425d;
+     font-size: 22px;
+     margin-bottom: -10px;
+ }
+ 
+ h3 {
+     color: #633739;
+      margin-bottom: -10px;
+ }
+ 
+ a {
+     color: #58A;
+ }
+
+ pre code function  {
+    text-decoration: none;
+    border-bottom: 1px solid #343434;
+}
+
 note {
     display:block;
     margin:20px;
