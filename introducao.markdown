@@ -1,6 +1,6 @@
 ___
 
-title: Introdução
+Introdução
 ---
 
 Já que você veio aqui, provavelmente quer aprender o funcionamento interno da computação gráfica e fazer todas as coisas legais que a galera faz por conta própria. Fazer coisas por si mesmo é extremamente divertido e útil, e te dá a possibilidade de entender de programação gráfica. Contudo, existem algumas coisas que precisam ser levadas em consideração antes de iniciar a sua jornada.
@@ -19,50 +19,6 @@ Para tornar os conceitos mais fáceis de acompanhar, e dá-los alguma estrutura,
 
 ### Caixas
 
-<style>
-    note {
-	display:block;
-	margin:20px;
-	padding:15px;
-	background-color: #D8F5D8;
-	color: #444;
-	border-radius: 5px;
-	border: 2px solid #AFDFAF;
-}
-warning {
-	display:block;
-	margin:20px;
-	padding:15px;
-	background-color: #FFD2D2;
-	color: #444;
-	border-radius: 5px;
-	border: 2px solid #E0B3B3;
-}
-function {
-    cursor: pointer;
-    border-bottom: 1px solid #c1c1c1;
-}
-
-def {
-    color: green;
-}
-
-fun {
-    font-family: "Courier New", Courier, monospace;
-    color: #822;
-}
-
-var {
-    font-style: normal;
-    font-family: "Courier New", Courier, monospace;
-    color: #227;
-}
-
-p code {
- 
-}
-</style>
-
 <note>
 Caixas <strong>verdes</strong> abordam observações ou recursos/dicas úteis sobre OpenGL ou o assunto em questão.
 </note>
@@ -76,7 +32,7 @@ Caixas <strong>vermelhas</strong> contém avisos ou outras informações que voc
 Você vai encontrar muitos trechos de código pequenos no site, que ficam localizados em caixas preto e cinza.
 
 <pre><code>
-// This box contains code
+// Esta caixa contém código fonte
 </code></pre>
 
 Uma vez que estas fornecem apenas trechos de código, quando necessário, irei fornecer um link para o código fonte completo para um determinado assunto.

@@ -14,7 +14,7 @@ O objetivo do AprendaOpenGL é mostrar a você tudo que existe em OpenGL moderno
 
 Na internet existem milhares de documentos e materiais para se aprender OpenGL, contudo, a maioria destes materiais são focados somente no _immediate mode_ do OpenGL (geralmente referido como OpenGL antigo) ou são incompletos, possuem documentação faltando ou não são adequados às suas preferências de aprendizado. No entanto, o meu objetivo é prover uma plataforma que seja, além de completa, fácil de entender.
 
-![Imagem de caixas texturizadas sorrindo em OpenGL](assets/index_image2.png)
+![Imagem de caixas texturizadas sorrindo em OpenGL](assets/images/index_image2.png)
 
 Se você gosta de ler tutoriais que fornecem instruções passo-a-passo, exemplos claros e que não te enterram em milhões de detalhes, estes tutoriais provavelmente são para você. Eles tentam ser compreensíveis para pessoas sem nenhum conhecimento em programação gráfica, mas ainda sendo de leitura interessante para usuários mais experientes.
 Os tutoriais também abordam conceitos práticos que, com alguma criatividade, podem transformar as suas ideias em aplicações gráficas 3D reais.
