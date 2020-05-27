@@ -5,7 +5,7 @@ OpenGL
 
 Antes de iniciar a nossa jornada devemos primeiramente definir o que exatamente é o OpenGL. O OpenGL é considerado principalmente uma API (<def>Application Programming Interface</def>) que nos prove uma grande quantidade de funções que nós podemos usar para manipular gráficos e imagens. Contudo, o OpenGL, por si próprio não é uma API, mas meramente uma especificação, desenvolvida e mantida pelo [Grupo Khronos](http://www.khronos.org/).
 
-![Imagem da logo do OpenGL](/assets/images/opengl.jpg)
+![Imagem da logo do OpenGL](/assets/images/opengl.jpg){: .right}
 
 A especificação do OpenGL define o que exatamente deve ser a saída/resultado de cada função e como ela deve executar. Fica a cargo dos desenvolvedores que estão implementado a especificação fornecer uma solução para como essa função deve operar. Uma vez que a especificação do OpenGL não provê os detalhes de implementação, as versões efetivamente implementadas são autorizadas a terem diferentes implementações, contanto que os seus resultados estejam de acordo com a especificação (e apresentam portanto o mesmo para o usuário).
 
