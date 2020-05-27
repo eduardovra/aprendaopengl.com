@@ -12,8 +12,8 @@ body {
     background-color: #eee;
     margin: 0px;
     padding: 0px;
-    #background-image: url('img/header_repeat2.png');
-    #background-repeat: repeat-x;
+    /*background-image: url('img/header_repeat2.png');*/
+    /*background-repeat: repeat-x;*/
 }
 
 p {
@@ -22,9 +22,9 @@ p {
 
 h1 {
     color: #303236;
-    #margin-bottom: -10px;
+    //#margin-bottom: -10px;
     font-weight: bold;
- }
+}
 
  h2 {
      /*color: #394666;*/
@@ -87,10 +87,6 @@ var {
     font-style: normal;
     font-family: "Courier New", Courier, monospace;
     color: #227;
-}
-
-p code {
-
 }
 
 img {

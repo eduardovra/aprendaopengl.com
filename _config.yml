@@ -27,6 +27,8 @@ url: "http://aprendaopengl.com" # the base hostname & protocol for your site, e.
 twitter_username: eduardovra
 github_username:  eduardovra
 
+google_analytics: UA-167735925-1
+
 # Build settings
 theme: minima
 #plugins:
