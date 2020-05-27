@@ -29,6 +29,8 @@ github_username:  eduardovra
 
 google_analytics: UA-167735925-1
 
+lang: pt-br
+
 # Build settings
 theme: minima
 #plugins:
