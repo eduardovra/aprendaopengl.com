@@ -21,14 +21,82 @@ O grupo Khronos hospeda publicamente todas as especificações para as versões 
 
 No passado, usar o OpenGL significava desenvolver no <def>immediate mode</def> (frequentemente referido como o <def>pipeline de função fixa</def>), que era um método de fácil utilização para desenhar gráficos. A maior parte da funcionalidade do OpenGL estava oculta dentro da biblioteca e os desenvolvedores não tinham muito controle sobre como o OpenGL fazia os cálculos. Os desenvolvedores eventualmente ficaram afoitos por mais flexibilidade, e ao longo do tempo as especificações ficaram mais flexíveis como resultado; os desenvolvedores ganharam mais controle sobre seus gráficos. O immediate mode é realmente fácil de usar e entender, mas ele também é extremamente ineficiente. Por esta razão, a especificação começou a obsoletar as funcionalidades do immediate mode a partir da versão 3.2 e começou a engajar os desenvolvedores a desenvolver no modo <def>core-profile</def> do OpenGL, que é uma divisão da especificação do OpenGL que removeu todas as funcionalidades obsoletas antigas.
 
+Ao utilizar o modo core-profile do OpenGL, ele nos força a utilizar práticas modernas. Caso tentarmos utilizar uma das funções obsoletadas, o OpenGL lança um erro e para de desenhar. A vantagem de aprender a abordagem moderna, é que ela é muito flexível e eficiente. Contudo, é também mais difícil de aprender. O immediate mode abstraia muitas das operações que o OpenGL executava, e enquanto era de fácil aprendizado, era difícil saber como o OpenGL estava realmente operando. A abordagem moderna força o desenvolvedor a realmente entender o OpenGL e a programação de gráficos, e ainda que seja um pouco difícil, permite muito mais flexibilidade, mais eficiência, e mais importante: um entendimento muito melhor de programação gráfica.
 
-When using OpenGL's core-profile, OpenGL forces us to use modern practices. Whenever we try to use one of OpenGL's deprecated functions, OpenGL raises an error and stops drawing. The advantage of learning the modern approach is that it is very flexible and efficient. However, it's also more difficult to learn. The immediate mode abstracted quite a lot from the actual operations OpenGL performed and while it was easy to learn, it was hard to grasp how OpenGL actually operates. The modern approach requires the developer to truly understand OpenGL and graphics programming and while it is a bit difficult, it allows for much more flexibility, more efficiency and most importantly: a much better understanding of graphics programming.
+Esta também é uma razão porque este livro é direcionado ao modo core-profile do OpenGL na versão 3.3. Embora seja mais difícil, o esforço claramente vale a pena.
 
-This is also the reason why this book is geared at core-profile OpenGL version 3.3. Although it is more difficult, it is greatly worth the effort.
-
-As of today, higher versions of OpenGL are available to choose from (at the time of writing 4.5) at which you might ask: why do I want to learn OpenGL 3.3 when OpenGL 4.5 is out? The answer to that question is relatively simple. All future versions of OpenGL starting from 3.3 add extra useful features to OpenGL without changing OpenGL's core mechanics; the newer versions just introduce slightly more efficient or more useful ways to accomplish the same tasks. The result is that all concepts and techniques remain the same over the modern OpenGL versions so it is perfectly valid to learn OpenGL 3.3. Whenever you're ready and/or more experienced you can easily use specific functionality from more recent OpenGL versions.
+Atualmente, versões mais recentes do OpenGL estão disponíveis para escolha (no momento da escrita 4.5), então você deve se perguntar: por que eu vou querer aprender sobre a versão 3.3 do OpenGL quando a 4.5 já está disponível ? A resposta para esta questão é relativamente simples. Todas as versões futuras do OpenGL, a partir da 3.3, adicionam recursos úteis extras sem mudar o mecanismo central do OpenGL; as versões mais atuais apenas introduzem formas levemente mais eficientes ou mais úteis de completar as mesmas tarefas. O resultado é que todos os conceitos e técnicas permanecem as mesmas através das versões modernas do OpenGL, sendo assim, é perfeitamente válido aprender a versão 3.3. Quando você estiver pronto e/ou mais experiente, você poderá usar facilmente funcionalidades de versões mais novas do OpenGL.
 
 <warning>
-When using functionality from the most recent version of OpenGL, only the most modern graphics cards will be able to run your application. This is often why most developers generally target lower versions of OpenGL and optionally enable higher version functionality.
-In some chapters you'll find more modern features which are noted down as such.
+Ao utilizar funcionalidades da versão do OpenGL, apenas as placas de video mais modernas serão capazes de executar sua aplicação. Frequentemente, este é o motivo porque a maioria dos desenvolvedores focam em versões menores do OpenGL, habilitando as funcionalidades de versões mais recentes apenas opcionalmente.
 </warning>
+
+Em alguns capítulos você irá encontrar funcionalidades mais modernas que são devidamente sinalizadas como tais.
+
+## Extensões
+
+Uma das grandes funcionalidades do OpenGL é seu suporte a extensões. Sempre que um fabricante cria uma nova técnica ou uma grande otimização para renderização, esta é disponibilizada com frequência através de uma <def>extensão</def> nos drivers. Se o hardware que a aplicação roda suportar esta extensão, o desenvolvedor por utilizá-la para proporcional gráficos mais avançados ou mais eficientes. Desta forma, um desenvolvedor gráfico pode utilizar estas novas técnicas de renderização sem a necessidade de aguardar o OpenGL incluí-la nas versões futuras, simplismente verificando se a extensão é suportada pela placa de video. Com frequência, quando uma extensão se torna popular ou é muito útil, ela eventualmente se torna parte de versões futuras do OpenGL.
+
+O desenvolvedor precisa consultar se alguma das extensões está disponível antes de utilizá-las (or usar uma biblioteca de extensões do OpenGL). Isto permite ao desenvolvedor realizar algumas coisas melhor, ou de forma mais eficiente, baseado no fato da extensão estar disponível:
+
+```markdown
+if(GL_ARB_extension_name)
+{
+    // Do cool new and modern stuff supported by hardware
+}
+else
+{
+    // Extension not supported: do it the old way
+}
+```
+Com a versão 3.3 do OpenGL nós raramente precisaremos de alguma extensão para maior parte das técnicas, contudo, caso necessário, instruções adequadas serão fornecidas.
+
+## Máquina de estados
+
+O OpenGL é por si só uma grande máquina de estados: uma coleção de variáveis que definem como o OpenGL deve operar naquele momento. O estado do OpenGL é comumente referido como o <def>contexto</def> do OpenGL. No uso do OpenGL, nós frequentemente alteramos seu estado definindo algumas opções, manipulando alguns _buffers_ e então renderizando usando o contexto corrente.
+
+Sempre que nós dizemos ao OpenGL que queremos desenhar linhas ao invés de triângulos por exemplo, nós alteramos o estado do OpenGL ao alterar alguma variável de contexto que define como o OpenGL deve desenhar. Assim que o contexto é alterado, ao dizer ao OpenGL que ele deve desenhar linhas, os próximos comandos de desenho vão desenhar linhas ao invés de triângulos.
+
+Quando trabalhando com OpenGL, nós vamos passar por diversas funções de <def>alteração de estado</def>, que mudam o contexto, e várias funções de <def>utilização de estado</def>, que realizam operações baseadas no estado corrente do OpenGL. Contanto que você tenha em mente que o OpenGL é basicamente uma grande máquina de estados, a maioria das funcionalidades farão mais sentido.
+
+## Objetos
+
+As bibliotecas de OpenGL são escritas em C e permitem muitas derivações em outras linguagens, mas no seu núcleo, ela permanece como uma biblioteca C. Uma vez que muitas das construções da linguagem C não se traduzem bem para outras linguagens de nível mais alto, o OpenGL foi desenvolvido com diversas abstrações em mente. Uma destas abstrações são os <def>objetos</def> no OpenGL.
+
+Um <def>objeto</def> no OpenGL é uma coleção de opções, que representa um subconjunto do estado do OpenGL. Por exemplo, nós podemos ter um objeto que representa as configurações da janela de desenho (_drawing window_); então nós podemos definir o seu tamanho, quantas cores ela suporta e assim por diante. Pode-se visualizar um objeto como uma _struct_ do C:
+
+An object in OpenGL is a collection of options that represents a subset of OpenGL's state. For example, we could have an object that represents the settings of the drawing window; we could then set its size, how many colors it supports and so on. One could visualize an object as a C-like struct:
+
+```markdown
+struct object_name {
+    float  option1;
+    int    option2;
+    char[] name;
+};
+```
+
+Sempre que queremos usar objetos, geralmente se parece com isso (com o contexto do OpenGL visualizado como uma estrutura grande):
+
+```markdown
+// The State of OpenGL
+struct OpenGL_Context {
+  	...
+  	object_name* object_Window_Target;
+  	...  	
+};
+```
+
+```markdown
+// create object
+unsigned int objectId = 0;
+glGenObject(1, &objectId);
+// bind/assign object to context
+glBindObject(GL_WINDOW_TARGET, objectId);
+// set options of object currently bound to GL_WINDOW_TARGET
+glSetObjectOption(GL_WINDOW_TARGET, GL_OPTION_WINDOW_WIDTH,  800);
+glSetObjectOption(GL_WINDOW_TARGET, GL_OPTION_WINDOW_HEIGHT, 600);
+// set context target back to default
+glBindObject(GL_WINDOW_TARGET, 0);
+```
+
+Este pequeno pedaço de código é um fluxo de trabalho que você verá frequentemente ao trabalhar com o OpenGL. Primeiro, criamos um objeto e armazenamos uma referência a ele como um ID (os dados do objeto real são armazenados nos bastidores). Em seguida, vinculamos o objeto (usando seu ID) ao local de destino do contexto (o local do destino de objeto da janela de exemplo é definido como <var>GL_WINDOW_TARGET</var>). Em seguida, definimos as opções da janela e, finalmente, desassociamos o objeto, definindo o ID do objeto atual do destino da janela como 0. As opções que definimos são armazenadas no objeto referenciado por <var>objectId</var> e restauradas assim que o objeto for vinculado novamente a <var>GL_WINDOW_TARGET</var>.
