@@ -31,9 +31,9 @@ Caixas <strong>vermelhas</strong> contém avisos ou outras informações que voc
 
 Você vai encontrar muitos trechos de código pequenos no site, que ficam localizados em caixas preto e cinza.
 
-<pre><code>
+```cpp
 // Esta caixa contém código fonte
-</code></pre>
+```
 
 Uma vez que estas fornecem apenas trechos de código, quando necessário, irei fornecer um link para o código fonte completo para um determinado assunto.
 

@@ -67,7 +67,7 @@ Um <def>objeto</def> no OpenGL é uma coleção de opções, que representa um s
 
 An object in OpenGL is a collection of options that represents a subset of OpenGL's state. For example, we could have an object that represents the settings of the drawing window; we could then set its size, how many colors it supports and so on. One could visualize an object as a C-like struct:
 
-```markdown
+```cpp
 struct object_name {
     float  option1;
     int    option2;
@@ -77,7 +77,7 @@ struct object_name {
 
 Sempre que queremos usar objetos, geralmente se parece com isso (com o contexto do OpenGL visualizado como uma estrutura grande):
 
-```markdown
+```cpp
 // The State of OpenGL
 struct OpenGL_Context {
   	...
@@ -86,7 +86,7 @@ struct OpenGL_Context {
 };
 ```
 
-```markdown
+```cpp
 // create object
 unsigned int objectId = 0;
 glGenObject(1, &objectId);

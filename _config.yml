@@ -32,6 +32,9 @@ theme: minima
 #plugins:
 #  - jekyll-feed
 
+kramdown:
+  input: GFM
+
 minima:
   skin: dark
 
