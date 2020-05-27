@@ -34,14 +34,14 @@ theme: minima
 #plugins:
 #  - jekyll-feed
 
-kramdown:
-  input: GFM
+#kramdown:
+#  input: GFM
 
-minima:
-  skin: dark
+#minima:
+#  skin: dark
 
-header_pages:
-  introducao.markdown
+#header_pages:
+#  introducao.markdown
 
 # Exclude from processing.
 # The following items will not be processed, by default.

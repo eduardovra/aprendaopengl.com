@@ -1,6 +1,6 @@
 ___
-
-OpenGL
+layout: page
+title: OpenGL
 ---
 
 Antes de iniciar a nossa jornada devemos primeiramente definir o que exatamente é o OpenGL. O OpenGL é considerado principalmente uma API (<def>Application Programming Interface</def>) que nos prove uma grande quantidade de funções que nós podemos usar para manipular gráficos e imagens. Contudo, o OpenGL, por si próprio não é uma API, mas meramente uma especificação, desenvolvida e mantida pelo [Grupo Khronos](http://www.khronos.org/).
@@ -63,9 +63,7 @@ Quando trabalhando com OpenGL, nós vamos passar por diversas funções de <def>
 
 As bibliotecas de OpenGL são escritas em C e permitem muitas derivações em outras linguagens, mas no seu núcleo, ela permanece como uma biblioteca C. Uma vez que muitas das construções da linguagem C não se traduzem bem para outras linguagens de nível mais alto, o OpenGL foi desenvolvido com diversas abstrações em mente. Uma destas abstrações são os <def>objetos</def> no OpenGL.
 
-Um <def>objeto</def> no OpenGL é uma coleção de opções, que representa um subconjunto do estado do OpenGL. Por exemplo, nós podemos ter um objeto que representa as configurações da janela de desenho (_drawing window_); então nós podemos definir o seu tamanho, quantas cores ela suporta e assim por diante. Pode-se visualizar um objeto como uma _struct_ do C:
-
-An object in OpenGL is a collection of options that represents a subset of OpenGL's state. For example, we could have an object that represents the settings of the drawing window; we could then set its size, how many colors it supports and so on. One could visualize an object as a C-like struct:
+Um <def>objeto</def> no OpenGL é uma coleção de opções, que representa um subconjunto do estado do OpenGL. Por exemplo, nós podemos ter um objeto que representa as configurações da janela de desenho (_drawing window_); então nós podemos definir o seu tamanho, quantas cores ela suporta e assim por diante. Pode-se visualizar um objeto como uma _struct_ da linguagem C:
 
 ```cpp
 struct object_name {
@@ -75,7 +73,7 @@ struct object_name {
 };
 ```
 
-Sempre que queremos usar objetos, geralmente se parece com isso (com o contexto do OpenGL visualizado como uma estrutura grande):
+Sempre que queremos usar objetos, geralmente se parece com isso (visualizando o contexto do OpenGL como uma grande estrutura):
 
 ```cpp
 // The State of OpenGL
@@ -99,4 +97,19 @@ glSetObjectOption(GL_WINDOW_TARGET, GL_OPTION_WINDOW_HEIGHT, 600);
 glBindObject(GL_WINDOW_TARGET, 0);
 ```
 
-Este pequeno pedaço de código é um fluxo de trabalho que você verá frequentemente ao trabalhar com o OpenGL. Primeiro, criamos um objeto e armazenamos uma referência a ele como um ID (os dados do objeto real são armazenados nos bastidores). Em seguida, vinculamos o objeto (usando seu ID) ao local de destino do contexto (o local do destino de objeto da janela de exemplo é definido como <var>GL_WINDOW_TARGET</var>). Em seguida, definimos as opções da janela e, finalmente, desassociamos o objeto, definindo o ID do objeto atual do destino da janela como 0. As opções que definimos são armazenadas no objeto referenciado por <var>objectId</var> e restauradas assim que o objeto for vinculado novamente a <var>GL_WINDOW_TARGET</var>.
+Este pequeno trecho de código é um fluxo de trabalho que você verá frequentemente ao trabalhar com o OpenGL. Primeiro, criamos um objeto e armazenamos uma referência a ele como um ID (os dados do objeto real são armazenados internamente). Em seguida, vinculamos o objeto (usando seu ID) ao local de destino no contexto (no exemplo, o local do objeto destino é definido como <var>GL_WINDOW_TARGET</var>). Em seguida, definimos as opções da janela e, finalmente, desassociamos o objeto, definindo o ID do objeto atual do destino da janela como 0. As opções que definimos são armazenadas no objeto referenciado por <var>objectId</var> e restauradas assim que o objeto for vinculado novamente a <var>GL_WINDOW_TARGET</var>.
+
+<warning>
+As amostras de código vistas até o momento são apenas aproximações de como o OpenGL realmente opera; ao longo do livre você verá vários exemplos reais.
+</warning>
+
+O melhor de usar esses objetos é que podemos definir mais de um objeto em nosso programa, definir suas opções e sempre que iniciamos uma operação que usa o estado do OpenGL, vinculamos o objeto às nossas configurações preferidas. Por exemplo, existem objetos que atuam como um contêiner para dados de modelo 3D (uma casa ou um personagem) e sempre que queremos desenhar um deles, vinculamos o objeto que contém os dados do modelo que queremos desenhar (primeiro criamos e configuramos as opções para esses objetos). Ter vários objetos nos permite especificar muitos modelos e sempre que queremos desenhar um modelo específico, simplesmente vinculamos (_bind_) o objeto correspondente antes de desenhar sem precisar definir todas as suas opções novamente.
+
+## Vamos começar
+
+Agora você aprendeu um pouco sobre a especificação e a biblioteca OpenGL, aprendeu mais ou menos como o OpenGL opera por baixo dos panos e viu alguns truques personalizados que o OpenGL usa. Não se preocupe se você não conseguiu entender tudo; ao longo do livro, percorreremos cada etapa e você verá exemplos suficientes para realmente entender o OpenGL.
+
+## Recursos adicionais
+
+* [opengl.org](https://www.opengl.org/): site oficial do OpenGL.
+* [OpenGL registry](https://www.opengl.org/registry/): hospeda as especificações e extensões do OpenGL para todas as versões.
