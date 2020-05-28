@@ -49,4 +49,50 @@ Quando gerarmos a biblioteca precisamos nos certificar que a IDE saiba onde enco
 
 Depois que os arquivos necessários estão armazenados no local de sua escolha, podemos começar a criar o nosso primeiro projeto OpenGL GLFW.
 
+## Nosso primeiro projeto
 
+Primeiramente, vamos abrir o Visual Studio e criar um projeto novo. Escolha o C++ caso mais de uma opção seja apresentada e selecione _Empty Project_ (não esqueça de dar ao projeto um nome adequado). Considerando que nós faremos tudo no modo 64-bit e o padrão do projeto é 32-bit, precisaremos alterar o menu dropdown no topo da tela, próximo ao seletor Debug, de x86 para x64:
+
+![Imagem mostrando como alterar de x86 para x64](/assets/images/x64.png)
+
+Agora que isso está feito, temos um workspace para criar nossa primeira aplicação OpenGL!
+
+## Linking
+
+Para que o projeto possa utilizar a biblioteca GLFW, precisamos fazer o <def>link</def> dela com o nosso projeto. Isso pode ser feito especificando que queremos usar a <code>glfw3.lib</code> na seção de _linker settings_. Para isso precisamos adicionar este diretório ao projeto primeiramente.
+
+Nós podemos dizer a IDE para levar este diretório em conta quando ele precisar procurar pelas bibliotecas ou arquivos de include. Clique com o botão direito no nome do projeto no _solution explorer_ e então vá até <code>VC++ Directories</code> como visto na imagem abaixo:
+
+![Imagem da configuração de diretórios no Visual Studio VC++](/assets/images/vc_directories.png)
+
+A partir deste ponto você pode adicionar os seus próprios diretórios para permitir que o projeto saiba onde procurar. Isso pode ser feito inserindo manualmente o diretório no campo de texto ou clicando na _location string_ apropriada e selecionando a opção <code>&lt;Edit..&gt;</code>. Faça isso para os diretórios da biblioteca <code>Library Directories</code> e os diretórios de include <code>Include Directories</code>:
+
+![Imagem da configuração dos diretórios de include no Visual Studio](/assets/images/include_directories.png)
+
+Aqui você pode adicionar quantos diretórios você quiser, e depois disso a IDE também vai procurar estes diretórios ao buscar os arquivos de bibliotecas e arquivos de include. Assim que a nossa pasta de <code>Include</code> da GLFW for incluída, você vai ser capaz de localizar todos os arquivos de cabeçalho fazendo include <code>&lt;GLFW/..&gt;</code>. O mesmo se aplica ao diretório das bibliotecas.
+
+Agora que o VS é capaz de encontrar todos os arquivos necessários nós podemos _linkar_ a GLFW ao projeto através da tab <code>Linker</code> e <code>Input</code>.
+
+![Imagem da configuração de link do Visual Studio](/assets/images/linker_input.png)
+
+Para finalmente _linkar_ a biblioteca você precisa especificar o nome dela ao _linker_. Considerando que o nome da biblioteca é <code>glfw3.lib</code>, nós adicionamos isso ao campo <code>Additional Dependencies</code> (manualmente ou usando a opção <code>&lt;Edit..&gt;</code>) e a partir deste ponto a GLFW vai estar _linkada_ quando compilarmos. Além da GLFW, nós vamos precisar também fazer o _link_ com a biblioteca OpenGL, mas isso pode variar de acordo com o sistema operacional:
+
+### Biblioteca OpenGL no Windows
+
+Se você estiver no Windows, a biblioteca OpenGL <code>opengl32.lib</code> vem com o SDK da Microsoft, que é instalado por padrão quando você instala o Visual Studio. Já que este capítulo usa o compilador do VS e estamos no windows, então adicionamos o arquivo <code>opengl32.lib</code> no _linker settings_. Observe que o equivalente em 64-bit da biblioteca OpenGL é chamada opengl32.lib, da mesma forma que o equivalente em 32-bit, sendo uma nomeclatura muito ruim.
+
+### Biblioteca OpenGL no Linux
+
+Em sistemas Linux você deve _linkar_ a biblioteca <code>libGL.so</code> adicionando <code>-lGL</code> nas configurações do seu linker. Caso você não consiga localizar a biblioteca, provavelmente você precisa instalar o pacote Mesa ou os pacotes dev da NVidia ou AMD.
+
+Agora que você adicionou as bibliotecas GLFW e do OpenGL as opções do linker, você pode incluir os arquivos de cabeçalho para GLFW da seguinte forma:
+
+```cpp
+#include <GLFW\glfw3.h>
+```
+
+<note>
+Para usuários Linux compilando com o GCC, a seguinte linha de comando pode ajudar a compilar o projeto: <code>-lglfw3 -lGL -lX11 -lpthread -lXrandr -lXi -ldl</code>. Caso as bibliotecas corretas não sejam _linkadas_ serão gerados muitos erros por _undefined reference_.
+</note>
+
+Isto conclui o setup e configuração da biblioteca GLFW.
