@@ -134,3 +134,13 @@ img.large {
     width: 500px;
     height: auto;
 }
+
+div.trigger {
+    position: absolute;
+    left: 150px;
+    top: 100px;
+}
+
+div.trigger a {
+    display: block;
+}
