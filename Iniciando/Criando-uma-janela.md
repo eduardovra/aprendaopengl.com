@@ -96,3 +96,44 @@ Para usuários Linux compilando com o GCC, a seguinte linha de comando pode ajud
 </note>
 
 Isto conclui o setup e configuração da biblioteca GLFW.
+
+## GLAD
+
+Nós ainda não chegamos lá, pois ainda existe algo que precisamos fazer. Devido ao fato do OpenGL ser apenas uma especificação, é de responsabilidade do fabricante do driver implementar a especificação em um driver que aquela placa de vídeo suporta. Já que existem muitas versões diferentes de driver para o OpenGL, o local da maioria das suas funções é desconhecida no momento da compilação e precisa ser consultada em tempo de execução. Sendo assim, é de resposabilidade do desenvolvedor obter o local das funções que ele/ela precisar, e armazena-las em ponteiros de função para uso posterior. A obtenção destes locais é diferente em cada [SO](https://www.khronos.org/opengl/wiki/Load_OpenGL_Functions). No Windows, se parece mais ou menos com isso:
+
+```cpp
+// define the function's prototype
+typedef void (*GL_GENBUFFERS) (GLsizei, GLuint*);
+// find the function and assign it to a function pointer
+GL_GENBUFFERS glGenBuffers  = (GL_GENBUFFERS)wglGetProcAddress("glGenBuffers");
+// function can now be called as normal
+unsigned int buffer;
+glGenBuffers(1, &buffer);
+```
+
+Como você pode ver, o código parece complexo, e é um processo trabalhoso de se realizar para cada função que você precisar e ainda não esteja declarada. Por sorte, existem bibliotecas desenvolvidas para este fim, sendo a **GLAD** uma biblioteca popular e atualizada.
+
+### Configurando a GLAD
+
+GLAD é uma biblioteca [open source](https://github.com/Dav1dde/glad) que gerencia todo o trabalho maçante que foi mencionado. A GLAD tem um processo de configuração um pouco diferente da maioria das bibliotecas open source. Ela utiliza um serviço web onde nós podemos dizer para qual versão do OpenGL nós queremos definir e carregar as funções.
+
+Vá até o [serviço web](http://glad.dav1d.de/), confirme que a linguagem está definida para C++, e na seção de API selecione uma versão do OpenGL 3.3 ou maior (que será a versão que estaremos utilizando; versões maiores também funcionarão). Também garanta que o profile esteja definido em <code>Core</code> e que a opção <code>Generate a loader</code> esteja marcada. Ignore as extensões (por enquanto) e clique em <code>Generate</code> para gerar os arquivos da biblioteca.
+
+Agora o GLAD deve ter disponibilizado um arquivo zip duas pastas de include e um único arquivo <code>glad.c</code>. Copie ambas as pastas de include (<code>glad</code> e <code>KHR</code>) no seu diretório de includes (ou adicione um apontamento a mais para estas pastas), e adicione o arquivo <code>glad.c</code> ao seu projeto.
+
+Depois dos passos anteriores, você deve ser capaz de adicionar a seguinte diretiva de include no topo do seu arquivo:
+
+```cpp
+#include <glad/glad.h>
+```
+
+Pressione o botão _compile_ para compilar e você não deve receber nenhum erro. Neste ponto estamos prontos para ir ao próximo capítulo e abordar como podemos efetivamente usar as bibliotecas GLFW e a GLAD para configurar um contexto do OpenGL e lançar uma janela. Confirme que todos os seus diretórios de include e de biblioteca estão corretos e que os nomes das bibliotecas correpondentes estejam corretas nas configurações do _linker_.
+
+## Recursos adicionais
+
+* [GLFW: Window Guide](http://www.glfw.org/docs/latest/window_guide.html): Guia oficial da GLFW em como configurar uma janela
+* [Building applications](http://www.opengl-tutorial.org/miscellaneous/building-your-own-c-application/): Ótimas informações a respeito do processo de compilação e linkagem de uma aplicação e uma grande lista de erros possíveis (com soluções).
+* [GLFW with Code::Blocks](http://wiki.codeblocks.org/index.php?title=Using_GLFW_with_Code::Blocks): Compilando a GLFW na IDE Code::Blocks.
+* [Running CMake](http://www.cmake.org/runningcmake/): Uma breve visão geral de como executar o CMake em ambos Windows e Linux.
+* [Writing a build system under Linux](https://learnopengl.com/demo/autotools_tutorial.txt): Um tutorial por Wouter Verholst em como construir um sistema de build no Linux com autotools.
+* [Polytonic/Glitter](https://github.com/Polytonic/Glitter): Um projeto boilerplate simples que vem com todas as bibliotecas relevantes pré-configuradas; ótimo se você quer um projeto de exemplo sem o incômodo de ter que compilar todas as bibliotecas por conta própria.
