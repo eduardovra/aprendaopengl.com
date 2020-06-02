@@ -20,31 +20,30 @@ p {
 
 h1 {
     color: #303236;
-    //#margin-bottom: -10px;
+    //margin-bottom: -10px;
     font-weight: bold;
 }
 
- h2 {
-     /*color: #394666;*/
-     color: #37425d;
-     font-size: 22px;
-     margin-bottom: -10px;
-     font-weight: bold;
-     margin: unset;
- }
- 
- h3 {
-     color: #633739;
-      margin-bottom: -10px;
- }
- 
- a {
-     color: #58A;
- }
+h2 {
+    color: #37425d;
+    font-size: 22px;
+    //margin-bottom: -10px;
+    font-weight: bold;
+    //margin: unset;
+}
 
- pre code function  {
-    text-decoration: none;
-    border-bottom: 1px solid #343434;
+h3 {
+   color: #633739;
+   //margin-bottom: -10px;
+}
+ 
+a {
+    color: #58A;
+}
+
+pre code function  {
+   text-decoration: none;
+   border-bottom: 1px solid #343434;
 }
 
 note {
