@@ -30,7 +30,7 @@ url: "https://aprendaopengl.com" # the base hostname & protocol for your site, e
 twitter_username: eduardovra
 github_username:  eduardovra
 
-google_analytics: UA-167735925-1
+ga_tracking: UA-167735925-1
 
 lang: pt-br
 
@@ -43,10 +43,10 @@ plugins:
 
 # Aux links for the upper right navigation
 aux_links:
-  "LearnOpenGL.com":
+  "Este site é uma tradução, visite o original em LearnOpenGL.com":
     - "https://learnopengl.com"
 
-#footer_content: "Copyright &copy; 2017-2019 Patrick Marsceill. Distributed by an <a href=\"https://github.com/pmarsceill/just-the-docs/tree/master/LICENSE.txt\">MIT license.</a>"
+footer_content: "<a href=\"https://github.com/eduardovra\">GitHub</a> / <a href=\"https://twitter.com/eduardovra\">Twitter</a>"
 
 #kramdown:
 #  input: GFM
