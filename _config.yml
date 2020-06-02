@@ -17,13 +17,16 @@
 # you will see them accessed via {{ site.title }}, {{ site.email }}, and so on.
 # You can create any custom variable you would like, and they will be accessible
 # in the templates via {{ site.myvariable }}.
+#permalink: pretty
+#heading_anchors: true
 
-title: AprendaOpenGL.com - LearnOpenGL.com
+
+title: AprendaOpenGL.com
+#logo: "/assets/logo.png"
 description: >- # this means to ignore newlines until "baseurl:"
-  Tradução em Português (brasileiro) do site learnopengl.com
-  Aprenda OpenGL - tutoriais completos para aprendizado de OpenGL moderno
-#baseurl: "" # the subpath of your site, e.g. /blog
-url: "http://aprendaopengl.com" # the base hostname & protocol for your site, e.g. http://example.com
+  Tradução em Português (brasileiro) do site <a href="learnopengl.com">LearnOpenGL.com</a>
+baseurl: "/" # the subpath of your site, e.g. /blog
+url: "https://aprendaopengl.com" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: eduardovra
 github_username:  eduardovra
 
@@ -32,10 +35,18 @@ google_analytics: UA-167735925-1
 lang: pt-br
 
 # Build settings
-theme: minima
+theme: just-the-docs
 plugins:
-  - jekyll-feed
-  - jekyll-sitemap
+  #- jekyll-feed
+  #- jekyll-sitemap
+  - jekyll-seo-tag
+
+# Aux links for the upper right navigation
+aux_links:
+  "LearnOpenGL.com":
+    - "https://learnopengl.com"
+
+#footer_content: "Copyright &copy; 2017-2019 Patrick Marsceill. Distributed by an <a href=\"https://github.com/pmarsceill/just-the-docs/tree/master/LICENSE.txt\">MIT license.</a>"
 
 #kramdown:
 #  input: GFM
