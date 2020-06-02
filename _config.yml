@@ -33,8 +33,9 @@ lang: pt-br
 
 # Build settings
 theme: minima
-#plugins:
-#  - jekyll-feed
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap
 
 #kramdown:
 #  input: GFM
