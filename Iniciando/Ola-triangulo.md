@@ -42,3 +42,72 @@ Após todos os valores de cores correspondentes terem sido determinados, o objet
 Como você pode ver, o pipeline gráfico é bastante complexo e contém muitas partes configuráveis. No entanto, para quase todos os casos, precisamos trabalhar apenas com o vextex shader e o fragment shader. O geometry shader é opcional e geralmente é deixado no shader padrão. Há também o estágio de tessellation e o estágio de transform feedback loop que não descrevemos aqui, mas isso é algo para mais tarde.
 
 No OpenGL moderno, é **obrigatório** definir pelo menos um vertex e um fragment shader (não há shaders de vértice / fragmento padrão na GPU). Por esse motivo, muitas vezes é bastante difícil começar a aprender o OpenGL moderno, pois é necessário muito conhecimento antes de poder renderizar seu primeiro triângulo. No entanto, depois de finalmente renderizar seu triângulo no final deste capítulo, você saberá muito mais sobre programação gráfica.
+
+## Vértices de entrada
+
+Para começar a desenhar algo, precisamos primeiro fornecer ao OpenGL alguns dados de vértices de entrada. O OpenGL é uma biblioteca de gráficos 3D, portanto, todas as coordenadas que especificamos no OpenGL estão em 3D (coordenadas <code>x</code>, <code>y</code> e <code>z</code>). O OpenGL não transforma simplesmente todas as suas coordenadas 3D em pixels 2D na tela; Ele processa apenas coordenadas 3D quando elas estão em um intervalo específico entre <code>-1,0</code> e <code>1,0</code> em todos os 3 eixos (<code>x</code>, <code>y</code> e <code>z</code>). Todas as coordenadas dentro desse intervalo, que é chamado <def>normalized device coordinates</def>, serão visíveis na tela (e todas as coordenadas fora desta região não serão).
+
+Como queremos renderizar um único triângulo, devemos especificar um total de três vértices, com cada vértice tendo uma posição 3D. Nós os definimos em normalized device coordinates (a região visível do OpenGL) em um array de <code>floats</code>:
+
+```cpp
+float vertices[] = {
+    -0,5f, -0,5f, 0,0f,
+     0,5f, -0,5f, 0,0f,
+     0,0f,  0,5f, 0,0f
+};
+```
+
+Como o OpenGL trabalha no espaço 3D, renderizamos um triângulo 2D com cada vértice tendo uma coordenada <code>z</code> de <code>0,0</code>. Dessa forma, a profundidade do triângulo permanece a mesma, fazendo com que pareça 2D.
+
+<note>
+<strong>Normalized Device Coordinates (NDC)</strong>
+<br/>
+<p>
+Depois que suas coordenadas de vértice forem processadas no vertex shader, elas deverão estar em <def>coordenadas de dispositivo normalizadas</def>, um espaço pequeno onde os valores de <code>x</code>, <code>y</code> e <code>z</code> variam de <code>-1,0</code> a <code>1,0</code>. Quaisquer coordenadas que estiverem fora desse intervalo serão descartadas / cortadas e não serão visíveis na tela. Abaixo, você pode ver o triângulo especificado nas coordenadas normalizadas do dispositivo (ignorando o eixo <code>z</code>):
+</p>
+
+<img src="/assets/images/ndc.png" alt="Coordenadas de dispositivos normalizados 2D, como mostrado em um gráfico" class="clean">
+
+<p>
+Diferentemente das coordenadas comuns da tela, os pontos positivos do eixo y na direção superior e as coordenadas (<code>0,0</code>) estão no centro do gráfico, em vez de no canto superior esquerdo. Eventualmente, você deseja que todas as coordenadas (transformadas) estejam nesse espaço de coordenadas, caso contrário elas não serão visíveis.
+</p>
+
+<p>
+Suas coordenadas NDC serão transformadas em <def>screen-space coordinates</def> por meio da <def>viewport transform</def> usando os dados que você forneceu com o <function>glViewport</function>. As coordenadas resultantes do espaço na tela são transformadas em fragmentos como entradas para o seu fragment shader.
+</p>
+</note>
+
+Com os dados de vértice definidos, gostaríamos de enviá-los como entrada para o primeiro processo do pipeline gráfico: o vertex shader. Isso é feito alocando memória na GPU onde armazenamos os dados do vértice, configuramos como o OpenGL deve interpretar a memória e especificamos como enviar os dados para a placa gráfica. O vertex shader processa todos os vértices que solicitamos a partir de sua memória.
+
+Gerenciamos essa memória por meio dos chamados <def>vertex buffer objects</def> (<def>VBO</def>) que podem armazenar um grande número de vértices na memória da GPU. A vantagem de usar esses objetos de buffer é que podemos enviar grandes lotes de dados de uma só vez para a placa gráfica e mantê-los lá se houver memória suficiente, sem ter que enviar os dados um vértice por vez. O envio de dados para a placa gráfica da CPU é relativamente lento, portanto, sempre que pudermos, tentaremos enviar o máximo de dados possível de uma só vez. Uma vez que os dados estão na memória da placa gráfica, o vertex shader tem acesso quase instantâneo aos vértices, tornando-o extremamente rápido
+
+Um vertex buffer object é nossa primeira ocorrência de um objeto OpenGL, como discutimos no capítulo OpenGL. Assim como qualquer objeto no OpenGL, esse buffer possui um ID exclusivo correspondente a esse buffer. Podemos gerar um ID de buffer usamos a função <function>glGenBuffers</function>:
+
+```cpp
+unsigned int VBO;
+glGenBuffers(1, &VBO);
+```
+
+O OpenGL tem muitos tipos de objetos de buffer e o tipo de buffer de um objeto de buffer de vértice é <var>GL_ARRAY_BUFFER</var>. O OpenGL nos permite fazer bind em vários buffers de uma só vez, desde que eles tenham um tipo de buffer diferente. Podemos fazer o bind do buffer recém-criado ao target <var>GL_ARRAY_BUFFER</var> com a função <function>glBindBuffer</function>:
+
+```cpp
+glBindBuffer (GL_ARRAY_BUFFER, VBO);
+```
+
+A partir desse ponto, todas as chamadas de buffer que fizermos (no alvo <var>GL_ARRAY_BUFFER</var>) serão usadas para configurar o buffer atualmente vinculado, que é o <var>VBO</var>. Em seguida, podemos fazer uma chamada para a função <function>glBufferData</function> que copia os dados de vértice definidos anteriormente para memória do buffer:
+
+```cpp
+glBufferData (GL_ARRAY_BUFFER, sizeof (vértices), vértices, GL_STATIC_DRAW);
+```
+
+<function>glBufferData</function> é uma função especificamente direcionada para copiar dados definidos pelo usuário parar o buffer atualmente vinculado. Seu primeiro argumento é o tipo de buffer no qual queremos copiar dados: o vertex buffer object atualmente vinculado ao destino <var>GL_ARRAY_BUFFER</var>. O segundo argumento especifica o tamanho dos dados (em bytes) que queremos passar para o buffer; basta um <code>sizeof</code> dos dados do vértice. O terceiro parâmetro são os dados efetivamente que queremos enviar.
+
+O quarto parâmetro especifica como queremos que a placa gráfica gerencie os dados fornecidos. Existem três formas:
+
+* <var>GL_STREAM_DRAW</var>: os dados são configurados apenas uma vez e utilizados pela GPU algumas poucas vezes.
+* <var>GL_STATIC_DRAW</var>: os dados são configurados apenas uma vez e usados ​​várias vezes.
+* <var>GL_DYNAMIC_DRAW</var>: os dados são alterados com frequência e usados ​​muitas vezes.
+
+Os dados de posição do triângulo não são alterados, são muito utilizados e permanecem os mesmos para todas as chamadas de renderização, portanto, seu tipo de uso deve ser <var>GL_STATIC_DRAW</var>. Se, por exemplo, tivéssemos um buffer contendo dados com probabilidade de alteração frequente, o tipo de uso <var>GL_DYNAMIC_DRAW</var> garantiria que a placa gráfica coloque os dados na memória, permitindo gravações mais rápidas.
+
+A partir de agora, armazenamos os dados dos vértices na memória na placa gráfica, gerenciados por um objeto de buffer de vértice chamado <var>VBO</var>. Em seguida, queremos criar um vertex shader e um fragment shader que realmente processe esses dados, então vamos começar a construí-los.
