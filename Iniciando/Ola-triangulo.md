@@ -196,4 +196,88 @@ if(!success)
 </pre></code>
 </note>
 
-Se nenhum erro foi detectado durante a compilação do vertex shader, ela está compilado.
+Se nenhum erro foi detectado durante a compilação do vertex shader, ele estará compilado.
+
+## Fragment shader
+
+O fragment shader é o segundo e último shader que vamos criar para renderizar um triângulo. O fragment shader tem tudo a ver com o cálculo da saída de cores dos seus pixels. Para simplificar, o fragment shader sempre exibirá uma cor laranja.
+
+<note>
+As cores na computação gráfica são representadas como uma matriz de 4 valores: o componente vermelho, verde, azul e alfa (opacidade), comumente abreviado para RGBA. Ao definir uma cor no OpenGL ou GLSL, definimos a força de cada componente para um valor entre <code>0.0</code> e <code>1.0</code>. Se, por exemplo, definirmos vermelho em <code>1.0</code> e verde em <code>1.0</code>, obteremos uma mistura das duas cores resultando na cor amarela. Dados esses três componentes de cores, podemos gerar mais de 16 milhões de cores diferentes!
+</note>
+
+```glsl
+#version 330 core
+out vec4 FragColor;
+
+void main()
+{
+    FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);
+} 
+```
+
+O fragment shader requer apenas uma variável de saída e esse é um vetor de tamanho 4 que define a saída de cor final que devemos calcular. Podemos declarar valores de saída com a palavra-chave <code>out</code>, que chamamos aqui prontamente de <var>FragColor</var>. Em seguida, simplesmente atribuímos um <code>vec4</code> à saída de cor como uma cor laranja com um valor alfa de <code>1.0</code> (<code>1.0</code> sendo completamente opaco).
+
+O processo para compilar um fragment shader é semelhante ao vertex shader, embora desta vez utilizemos a constante <var>GL_FRAGMENT_SHADER</var> como o tipo de shader:
+
+```glsl
+unsigned int fragmentShader;
+fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
+glCompileShader(fragmentShader);
+```
+
+Agora, os dois shaders estão compilados e a única coisa a fazer é vincular os dois objetos de shader a um <def>shader program</def> que podemos usar para renderizar. Verifique também se há erros de compilação aqui!
+
+### Shader program
+
+Um objeto shader program é a versão linkada final de vários shaders combinados. Para usar os shaders compilados recentemente, precisamos fazer o <def>link</def> deles a um object shader program e, em seguida, ativar esse shader program ao renderizar objetos. Os shaders do shader program ativado serão usados quando efetuarmos chamadas de renderização.
+
+Ao linkar os shaders a um programa, ele vincula as saídas de cada shader às entradas do próximo shader. Também é aqui que você obterá erros de linking se suas saídas e entradas não corresponderem.
+
+Criar um program object é fácil:
+
+```cpp
+unsigned int shaderProgram;
+shaderProgram = glCreateProgram();
+```
+
+A função <function>glCreateProgram</function> cria um programa e retorna um ID de referência para o program object recém-criado. Agora precisamos anexar os shaders compilados anteriormente ao objeto do programa e depois linka-los usando <function>glLinkProgram</function>:
+
+```cpp
+glAttachShader(shaderProgram, vertexShader);
+glAttachShader(shaderProgram, fragmentShader);
+glLinkProgram(shaderProgram);
+```
+
+O código deve ser bastante autoexplicativo, anexamos os shaders ao programa e os vinculamos via <function>glLinkProgram</function>.
+
+<note>
+Assim como a compilação do shader, também podemos verificar se o link de um shader program falhou e recuperar o log correspondente. No entanto, em vez de usar <function>glGetShaderiv</function> e <function>glGetShaderInfoLog</function>, agora usamos:
+<br/>
+
+<code><pre>
+glGetProgramiv (shaderProgram, GL_LINK_STATUS e sucesso);
+if (! success) {
+     glGetProgramInfoLog (shaderProgram, 512, NULL, infoLog);
+     ...
+}
+</pre></code>
+</note>
+
+O resultado é um program object que podemos ativar chamando <function>glUseProgram</function> com o objeto de programa recém-criado como argumento:
+
+```cpp
+glUseProgram(shaderProgram);
+```
+
+Cada chamada de shader ou de renderização após o <function>glUseProgram</function> usará esse program object (e, portanto, os shaders).
+
+Ah, sim, e não se esqueça de excluir os shader objects assim que os linkarmos ao program object; não precisamos mais deles:
+
+```cpp
+glDeleteShader(vertexShader);
+glDeleteShader(fragmentShader);
+```
+
+No momento, enviamos os dados de vértice de entrada para a GPU e instruímos a GPU como deve processar os dados de vértice dentro de um vertex shader e um fragment shader. Estamos quase lá. O OpenGL ainda não sabe como deve interpretar os dados de vértice na memória e como deve conectar os dados de vértice aos attributes do vertex shader. Seremos legais e diremos ao OpenGL como fazer isso.
