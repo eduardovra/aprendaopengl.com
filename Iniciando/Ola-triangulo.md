@@ -141,3 +141,59 @@ Em programação gráfica, usamos o conceito matemático de um vetor com bastant
 Para definir a saída do vertex shader, precisamos atribuir os dados de posição à variável <var>gl_Position</var> predefinida, que é uma vec4 por traz dos panos. No final da função <fun>main</fun>, o que quer que tenhamos definido como <var>gl_Position</var> será usado como saída do vertex shader. Como nossa entrada é um vetor de tamanho 3, temos que convertê-lo em um vetor de tamanho 4. Podemos fazer isso inserindo os valores <code>vec3</code> dentro do construtor de <code>vec4</code> e configurando seu componente <code>w</code> como <code>1.0f</code> (será explicado o porque em um capítulo posterior).
 
 O atual vertex shader é provavelmente o vertex shader mais simples que podemos imaginar, porque não processamos os dados de entrada e simplesmente o encaminhamos para a saída do shader. Em aplicações reais, os dados de entrada geralmente ainda não estão nas coordenadas normalizadas do dispositivo, portanto, primeiro precisamos transformar os dados de entrada em coordenadas que se enquadram na região visível do OpenGL.
+
+## Compilando um shader
+
+Por hora, nós pegaremos o código-fonte para o vertex shader e o armazenamos em uma string const C na parte superior do código fonte:
+
+```cpp
+const char *vertexShaderSource = "#version 330 core\n"
+    "layout (location = 0) in vec3 aPos;\n"
+    "void main()\n"
+    "{\n"
+    "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+    "}\0";
+```
+
+Para que o OpenGL use o shader, é necessário compilá-lo dinamicamente em tempo de execução a partir do código-fonte. A primeira coisa que precisamos fazer é criar um objeto shader, novamente referenciado por um ID. Portanto, armazenamos o vertex shader como um <code>unsigned int</code> e criamos o shader com <function>glCreateShader</function>:
+
+```cpp
+unsigned int vertexShader;
+vertexShader = glCreateShader(GL_VERTEX_SHADER);
+```
+
+Fornecemos o tipo de shader que queremos criar como argumento para <function>glCreateShader</function>. Como estamos criando um vertex shader, passamos <var>GL_VERTEX_SHADER</var>.
+
+Em seguida, anexamos o código-fonte do shader ao objeto shader e compilamos:
+
+```cpp
+glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
+glCompileShader(vertexShader);
+```
+
+A função <function>glShaderSource</function> recebe o shader object para compilar como seu primeiro argumento. O segundo argumento especifica quantas strings estamos passando como código-fonte, que é apenas uma. O terceiro parâmetro é o código fonte real do vertex shader e podemos deixar o quarto parâmetro como <var>NULL</var>.
+
+<note markdown="1">
+É uma boa prática verificar se a compilação foi bem-sucedida após a chamada ao <function>glCompileShader</function> e, caso não, quais erros foram encontrados para que você possa corrigi-los. A verificação de erros em tempo de compilação é realizada da seguinte maneira:
+<br/>
+
+<code><pre>
+int  success;
+char infoLog[512];
+glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+</pre></code>
+
+<br/>
+Primeiro, definimos um integer para indicar sucesso e um contêiner de armazenamento para as mensagens de erro (se houverem). Em seguida, verificamos se a compilação foi bem-sucedida com a função <function>glGetShaderiv</function>. Se a compilação falhar, devemos obter a mensagem de erro com <function>glGetShaderInfoLog</function> e imprimi-la.
+<br/>
+
+<code><pre>
+if(!success)
+{
+    glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
+    std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+}
+</pre></code>
+</note>
+
+Se nenhum erro foi detectado durante a compilação do vertex shader, ela está compilado.
