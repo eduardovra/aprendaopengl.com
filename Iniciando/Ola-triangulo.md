@@ -111,3 +111,33 @@ O quarto parâmetro especifica como queremos que a placa gráfica gerencie os da
 Os dados de posição do triângulo não são alterados, são muito utilizados e permanecem os mesmos para todas as chamadas de renderização, portanto, seu tipo de uso deve ser <var>GL_STATIC_DRAW</var>. Se, por exemplo, tivéssemos um buffer contendo dados com probabilidade de alteração frequente, o tipo de uso <var>GL_DYNAMIC_DRAW</var> garantiria que a placa gráfica coloque os dados na memória, permitindo gravações mais rápidas.
 
 A partir de agora, armazenamos os dados dos vértices na memória na placa gráfica, gerenciados por um objeto de buffer de vértice chamado <var>VBO</var>. Em seguida, queremos criar um vertex shader e um fragment shader que realmente processe esses dados, então vamos começar a construí-los.
+
+## Vertex shader
+
+O vertex shader é um dos shaders programáveis por pessoas como nós. O OpenGL moderno exige que, pelo menos, configuremos um vertex shader e um fragment shader, para que possamos fazer alguma renderização. Então vamos introduzir brevemente shaders e configurar dois shaders muito simples para desenhar nosso primeiro triângulo. No próximo capítulo, discutiremos os shaders com mais detalhes.
+
+A primeira coisa que precisamos fazer é escrever o vertex shader na linguagem GLSL (OpenGL Shading Language) e compilar esse shader para que possamos usá-lo em nossa aplicação. Abaixo, você encontrará o código-fonte de um vertex shader muito básico em GLSL:
+
+```glsl
+#version 330 core
+layout (location = 0) in vec3 aPos;
+
+void main()
+{
+    gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);
+}
+```
+
+Como você pode ver, a linguagem GLSL é semelhante ao C. Cada shader começa com uma declaração de sua versão. Desde o OpenGL 3.3 (e superiores), os números de versão do GLSL correspondem à versão do OpenGL (a versão 420 da GLSL corresponde à versão 4.2 do OpenGL, por exemplo). Também mencionamos explicitamente que estamos usando a funcionalidade de core profile.
+
+Em seguida, declaramos todos os atributos de vértice de entrada no vertex shader com a palavra-chave <code>in</code>. No momento, apenas nos preocupamos com dados de posição, portanto, precisamos apenas de um único vertex attribute. A GLSL tem um tipo de dados vector que contém 1 a 4 floats com base em seu dígito de sufíxo. Como cada vértice tem uma coordenada 3D, criamos uma variável de entrada <code>vec3</code> com o nome <var>aPos</var>. Também definimos especificamente o local da variável de entrada usando <code>layout (location = 0)</code>. Mais tarde, você verá por que precisamos desse local.
+
+<note>
+<strong>Vetor</strong>
+<br/>
+Em programação gráfica, usamos o conceito matemático de um vetor com bastante frequência, pois ele representa claramente as posições / direções em qualquer espaço e possui propriedades matemáticas úteis. Um vetor na GLSL tem um tamanho máximo de 4 e cada um de seus valores pode ser recuperado via <code>vec.x</code>, <code>vec.y</code>, <code>vec.z</code> e <code>vec.w</code> respectivamente, onde cada um deles representa uma coordenada no espaço. Observe que o componente <code>vec.w</code> não é usado como uma posição no espaço (estamos lidando com 3D, não com 4D), mas é usado para algo chamado <def>perspective division</def>. Discutiremos vetores com muito mais profundidade em um capítulo posterior.
+</note>
+
+Para definir a saída do vertex shader, precisamos atribuir os dados de posição à variável <var>gl_Position</var> predefinida, que é uma vec4 por traz dos panos. No final da função <fun>main</fun>, o que quer que tenhamos definido como <var>gl_Position</var> será usado como saída do vertex shader. Como nossa entrada é um vetor de tamanho 3, temos que convertê-lo em um vetor de tamanho 4. Podemos fazer isso inserindo os valores <code>vec3</code> dentro do construtor de <code>vec4</code> e configurando seu componente <code>w</code> como <code>1.0f</code> (será explicado o porque em um capítulo posterior).
+
+O atual vertex shader é provavelmente o vertex shader mais simples que podemos imaginar, porque não processamos os dados de entrada e simplesmente o encaminhamos para a saída do shader. Em aplicações reais, os dados de entrada geralmente ainda não estão nas coordenadas normalizadas do dispositivo, portanto, primeiro precisamos transformar os dados de entrada em coordenadas que se enquadram na região visível do OpenGL.
