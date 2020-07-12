@@ -402,3 +402,120 @@ Se o seu resultado não parecer o mesmo, você provavelmente fez algo errado ao 
 
 ##  Element Buffer Objects
 
+Há uma última coisa interessante para discutir ao renderizar vértices: <def>element buffer objects</def> abreviados para <def>EBO</def>. Para explicar como os element buffer objects funcionam, é melhor dar um exemplo: suponha que desejemos desenhar um retângulo em vez de um triângulo. Podemos desenhar um retângulo usando dois triângulos (o OpenGL trabalha principalmente com triângulos). Isso irá gerar o seguinte conjunto de vértices:
+
+```cpp
+float vertices[] = {
+    // first triangle
+     0.5f,  0.5f, 0.0f,  // top right
+     0.5f, -0.5f, 0.0f,  // bottom right
+    -0.5f,  0.5f, 0.0f,  // top left 
+    // second triangle
+     0.5f, -0.5f, 0.0f,  // bottom right
+    -0.5f, -0.5f, 0.0f,  // bottom left
+    -0.5f,  0.5f, 0.0f   // top left
+};
+```
+
+Como você pode ver, há alguma sobreposição nos vértices especificados. Especificamos o canto inferior direito e o canto superior esquerdo duas vezes! Isso representa uma sobrecarga de 50%, pois o mesmo retângulo também pode ser especificado com apenas 4 vértices, em vez de 6. Isso só piorará assim que tivermos modelos mais complexos que possuem milhares de triângulos, onde haverá grandes pedaços que irão se sobrepor. O que seria uma solução melhor é armazenar apenas os vértices únicos e, em seguida, especificar a ordem na qual queremos desenhar esses vértices. Nesse caso, teríamos que armazenar apenas 4 vértices para o retângulo e depois especificar apenas em qual ordem nós gostaríamos de desenhá-los. Não seria ótimo se o OpenGL nos fornecesse um recurso como esse?
+
+Felizmente, os element buffer objects funcionam exatamente assim. Um EBO é um buffer, assim como um vertex buffer object, que armazena índices que o OpenGL usa para decidir quais vértices desenhar. Isso é chamado de <def>indexed drawing</def>, e é exatamente a solução para o nosso problema. Para começar, primeiro precisamos especificar os vértices (únicos) e os índices para desenhá-los como um retângulo:
+
+```cpp
+float vertices[] = {
+     0.5f,  0.5f, 0.0f,  // top right
+     0.5f, -0.5f, 0.0f,  // bottom right
+    -0.5f, -0.5f, 0.0f,  // bottom left
+    -0.5f,  0.5f, 0.0f   // top left 
+};
+unsigned int indices[] = {  // note that we start from 0!
+    0, 1, 3,   // first triangle
+    1, 2, 3    // second triangle
+};
+```
+
+Você pode ver que, ao usar índices, precisamos apenas de 4 vértices em vez de 6. Em seguida, precisamos criar o element buffer object:
+
+```cpp
+unsigned int EBO;
+glGenBuffers(1, &EBO);
+```
+
+Semelhante ao VBO, fazemos o bindo do EBO e copiamos os índices no buffer com a função <function>glBufferData</function>. Além disso, assim como o VBO, devemos fazer essas chamadas entre um bind e um unbind, mas desta vez especificamos <var>GL_ELEMENT_ARRAY_BUFFER</var> como o tipo de buffer.
+
+```cpp
+glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW); 
+```
+
+Observe que agora estamos fornecendo <var>GL_ELEMENT_ARRAY_BUFFER</var> como o alvo do buffer. A última coisa a fazer é substituir a chamada <function>glDrawArrays</function> por <function>glDrawElements</function> para indicar que queremos renderizar os triângulos a partir de um buffer de índice. Ao usar <function>glDrawElements</function>, vamos desenhar usando índices fornecidos no element buffer object corrente em bind:
+
+```cpp
+glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+```
+
+O primeiro argumento especifica o modo que queremos desenhar, semelhante ao <function>glDrawArrays</function>. O segundo argumento é a contagem ou o número de elementos que gostaríamos de desenhar. Como especificamos 6 índices, queremos desenhar 6 vértices no total. O terceiro argumento é o tipo de índices que é do tipo <var>GL_UNSIGNED_INT</var>. O último argumento nos permite especificar um offset no EBO (ou passar um index array, mas é quando você não está usando element buffer objects), mas vamos deixar isso em <code>0</code>.
+
+A função <function>glDrawElements</function> obtém seus índices do EBO atualmente em bind ao alvo <var>GL_ELEMENT_ARRAY_BUFFER</var>. Isso significa que precisamos fazer o bind do EBO correspondente toda vez que queremos renderizar um objeto com índices que, novamente, são um pouco pesados. Acontece que um vertex array object também controla os bindings dos element buffer objects. O último element buffer object que foi realizado o bind enquanto um VAO está em bind é armazenado como o element buffer object do VAO. Então, ao fazer bind no VAO, o bind no EBO é automático.
+
+![Imagem da estrutura do VAO/ o que ele armazena agora também em conjunto com o EBO](/assets/images/vertex_array_objects_ebo.png){: .clean}
+
+<warning>
+Um VAO armazena as chamadas <function>glBindBuffer</function> quando o target é <var>GL_ELEMENT_ARRAY_BUFFER</var>. Isso também significa que ele armazena suas chamadas de unbind, portanto, certifique-se de não desvincular o element array buffer antes de fazer o unbind do VAO, caso contrário, ele fica sem um EBO configurado.
+</warning>
+
+O código de inicialização e draw resultante agora fica mais ou menos assim:
+
+```cpp
+// ..:: Initialization code :: ..
+// 1. bind Vertex Array Object
+glBindVertexArray(VAO);
+// 2. copy our vertices array in a vertex buffer for OpenGL to use
+glBindBuffer(GL_ARRAY_BUFFER, VBO);
+glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+// 3. copy our index array in a element buffer for OpenGL to use
+glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+// 4. then set the vertex attributes pointers
+glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+glEnableVertexAttribArray(0);  
+
+[...]
+  
+// ..:: Drawing code (in render loop) :: ..
+glUseProgram(shaderProgram);
+glBindVertexArray(VAO);
+glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0)
+glBindVertexArray(0);
+```
+
+A execução do programa deve fornecer uma imagem como mostrado abaixo. A imagem da esquerda deve parecer familiar e a imagem da direita é o retângulo desenhado no modo <def>wireframe</def>. O retângulo do wireframe mostra que o retângulo de fato consiste em dois triângulos.
+
+![Um retângulo desenhado usando drawing indexado no OpenGL](/assets/images/hellotriangle2.png){: .clean style="width:800px"}
+
+<note>
+<strong>Modo de estrutura de arame</strong>
+<br/>
+
+Para desenhar seus triângulos no modo wireframe, você pode configurar como o OpenGL desenha suas primitivas usando <code>glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)</code>. O primeiro argumento especifica que queremos aplicá-lo nas partes frontal e traseira de todos os triângulos e o segundo argumento nos diz para desenhá-los como linhas. Quaisquer chamadas de desenho subsequentes renderizarão os triângulos no modo wireframe até que retornemos ao padrão usando <code>glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)</code>
+</note>
+
+Se houver algum erro, faça o caminho inverso e veja se você deixou passar alguma coisa. Você pode encontrar o código fonte completo [aqui](https://learnopengl.com/code_viewer_gh.php?code=src/1.getting_started/2.2.hello_triangle_indexed/hello_triangle_indexed.cpp).
+
+Se você conseguiu desenhar um triângulo ou um retângulo, como fizemos acima, parabéns, conseguiu passar por uma das partes mais difíceis do OpenGL moderno: desenhar o seu primeiro triângulo. Essa é uma parte difícil, pois há uma grande quantidade de conhecimento necessária antes de poder desenhar seu primeiro triângulo. Felizmente, agora superamos essa barreira e, esperamos, os próximos capítulos serão muito mais fáceis de entender.
+
+## Recursos adicionais
+
+* [antongerdelan.net/hellotriangle](http://antongerdelan.net/opengl/hellotriangle.html): a versão de Anton Gerdelan em como renderizar o seu primeiro triângulo.
+* [open.gl/drawing](https://open.gl/drawing): a versão de Alexander Overvoorde de como renderizar o primeiro triângulo.
+* [antongerdelan.net/vertexbuffers](http://antongerdelan.net/opengl/vertexbuffers.html): algumas informações adicionais sobre vertex buffer objects.
+* [learnopengl.com/In-Practice/Debugging](https://learnopengl.com/In-Practice/Debugging): existem várias etapas envolvidas neste capítulo; se você estiver parado, pode valer a pena ler um pouco sobre a depuração no OpenGL (até a seção de saída de debug output).
+
+# Exercícios
+
+Para realmente entender os conceitos discutidos, foram criados alguns exercícios. É aconselhável trabalhar com eles antes de prosseguir para o próximo assunto para garantir que você tenha uma boa noção do que está acontecendo.
+
+1. Tente desenhar 2 triângulos um ao lado do outro usando <function>glDrawArrays</function> adicionando mais vértices aos seus dados: [solução](https://learnopengl.com/code_viewer_gh.php?code=src/1.getting_started/2.3.hello_triangle_exercise1/hello_triangle_exercise1.cpp).
+2. Agora crie os mesmos 2 triângulos usando dois VAOs e VBOs diferentes para seus dados: [solução](https://learnopengl.com/code_viewer_gh.php?code=src/1.getting_started/2.4.hello_triangle_exercise2/hello_triangle_exercise2.cpp).
+3. Crie dois shader programs nos quais o segundo programa usa fragment shader diferente que gera a cor amarela; desenhe os dois triângulos novamente sendo um deles com a saída em amarelo: [solução](https://learnopengl.com/code_viewer_gh.php?code=src/1.getting_started/2.5.hello_triangle_exercise3/hello_triangle_exercise3.cpp).
