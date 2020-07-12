@@ -257,10 +257,10 @@ Assim como a compilação do shader, também podemos verificar se o link de um s
 <br/>
 
 <code><pre>
-glGetProgramiv (shaderProgram, GL_LINK_STATUS e sucesso);
-if (! success) {
-     glGetProgramInfoLog (shaderProgram, 512, NULL, infoLog);
-     ...
+glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
+if(!success) {
+    glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
+    ...
 }
 </pre></code>
 </note>
@@ -281,3 +281,53 @@ glDeleteShader(fragmentShader);
 ```
 
 No momento, enviamos os dados de vértice de entrada para a GPU e instruímos a GPU como deve processar os dados de vértice dentro de um vertex shader e um fragment shader. Estamos quase lá. O OpenGL ainda não sabe como deve interpretar os dados de vértice na memória e como deve conectar os dados de vértice aos attributes do vertex shader. Seremos legais e diremos ao OpenGL como fazer isso.
+
+## Linking dos Vertex Attributes
+
+O vertex shader nos permite especificar qualquer entrada que desejamos na forma de vertex attributes e, embora isso permita uma grande flexibilidade, significa que temos que especificar manualmente qual parte de nossos dados de entrada vai para qual atributo de vértice no shader de vértice. Isso significa que precisamos especificar como o OpenGL deve interpretar os dados do vértice antes da renderização.
+
+Nossos dados de buffer de vértice são formatados da seguinte maneira:
+
+![Setup do ponteiro de vertex attributesno VBO do OpenGL](/assets/images/vertex_attribute_pointer.png){: .clean}
+
+* Os dados da posição são armazenados como valores de ponto flutuante de 32 bits (4 bytes).
+* Cada posição é composta por 3 desses valores.
+* Não há espaço (ou outros valores) entre cada conjunto de 3 valores. Os valores estão <def>tightly packed</def> no array.
+* O primeiro valor nos dados está no início do buffer.
+
+Com esse conhecimento, podemos dizer ao OpenGL como ele deve interpretar os dados do vértice (por vertex attribute) usando <function>glVertexAttribPointer</function>:
+
+```cpp
+glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+glEnableVertexAttribArray(0); 
+```
+
+A função <function>glVertexAttribPointer</function> possui alguns parâmetros, portanto, vamos examiná-los com cuidado:
+
+* O primeiro parâmetro especifica qual vertex attribute queremos configurar. Lembre-se de que especificamos a <var>position</var> do vertex attribute np vertex shader com o <code>layout (localização = 0)</code>. Isso define o local do atributo de vértice como <code>0</code> e, como queremos passar dados para esse vertex attribute, passamos <code>0</code>.
+* O próximo argumento especifica o tamanho do atributo de vértice. O vertex attribute é um <code>vec3</code>, portanto é composto por <code>3</code> valores.
+* O terceiro argumento especifica o tipo de dados que é <var>GL_FLOAT</var> (um <code>vec*</code> na GLSL consiste em valores float).
+* O próximo argumento especifica se queremos que os dados sejam normalizados. Se estivermos inserindo tipos de dados inteiros (int, byte) e definimos como <var>GL_TRUE</var>, os dados inteiros são normalizados para <code>0</code> (ou <code>-1</code> para dados com sinal) e <code>1</code> quando convertidos para float. Isso não é relevante para nós, portanto deixaremos em <var>GL_FALSE</var>.
+* O quinto argumento é conhecido como <def>stride</def> e nos diz o espaço entre atributos consecutivos do vértice. Como o próximo conjunto de dados de posição está localizado exatamente 3 vezes o tamanho de um <code>float</code>, especificamos esse valor como o stride. Observe que, como sabemos que a matriz está tightly packed (não há espaço entre o próximo valor do vertex attribute), também poderíamos ter especificado o stride como <code>0</code> para permitir que o OpenGL determine o stride (isso só funciona quando os valores estão bem compactados). Sempre que temos mais vertex attributes, precisamos definir cuidadosamente o espaçamento entre cada atributo de vértice, mas veremos mais exemplos disso posteriormente.
+* O último parâmetro é do tipo <code>void*</code> e, portanto, requer essa cast estranho. Esse é o <def>offset</def> de onde os dados de posição começam no buffer. Como os dados da posição estão no início do array de dados, esse valor é <code>0</code>. Vamos explorar esse parâmetro com mais detalhes posteriormente.
+
+<note>
+Cada vertex attribute obtém seus dados da memória gerenciada por um VBO, e o que determina qual VBO é utilizado (você pode ter vários VBOs) é o VBO corrente em bind ao chamar a função <function>glVertexAttribPointer</function> passando <var>GL_ARRAY_BUFFER</var> como parâmetro. Como o VBO definido anteriormente ainda está em bind antes de chamarmos a função <function>glVertexAttribPointer</function>, o vertex attribute <code>0</code> agora ficou corretamente associado aos seus dados de vértices.
+</note>
+
+Agora que especificamos como o OpenGL deve interpretar os dados do vértice, também devemos habilitar o vertex attribute com a função <function>glEnableVertexAttribArray</function>, fornecendo a localização do vertex attribute como argumento; vertex attributes são desativados por padrão. A partir desse ponto, configuramos tudo: inicializamos os dados do vértice em um buffer usando um vertex buffer object, configuramos um vertex shader e um fragment shader e dissemos ao OpenGL como vincular os dados do vértice aos atributos de vértice do vertex shader. Desenhar um objeto no OpenGL agora ficaria assim:
+
+```cpp
+// 0. copy our vertices array in a buffer for OpenGL to use
+glBindBuffer(GL_ARRAY_BUFFER, VBO);
+glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+// 1. then set the vertex attributes pointers
+glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+glEnableVertexAttribArray(0);  
+// 2. use our shader program when we want to render an object
+glUseProgram(shaderProgram);
+// 3. now draw the object 
+someOpenGLFunctionThatDrawsOurTriangle();
+```
+
+Temos que repetir esse processo toda vez que queremos desenhar um objeto. Pode não parecer muito, mas imagine se tivermos mais de 5 vertex attributes e talvez centenas de objetos diferentes (o que não é incomum). Fazer o bind de buffer objects e configurar todos os vertex attributes para cada um desses objetos rapidamente se torna um processo complicado. E se houvesse alguma maneira de armazenar todas essas configurações de estado em um objeto e simplesmente fazendo o bind deste objeto restaurar seu estado ?
