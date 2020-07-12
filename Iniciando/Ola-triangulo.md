@@ -45,7 +45,7 @@ No OpenGL moderno, é **obrigatório** definir pelo menos um vertex e um fragmen
 
 ## Vértices de entrada
 
-Para começar a desenhar algo, precisamos primeiro fornecer ao OpenGL alguns dados de vértices de entrada. O OpenGL é uma biblioteca de gráficos 3D, portanto, todas as coordenadas que especificamos no OpenGL estão em 3D (coordenadas <code>x</code>, <code>y</code> e <code>z</code>). O OpenGL não transforma simplesmente todas as suas coordenadas 3D em pixels 2D na tela; Ele processa apenas coordenadas 3D quando elas estão em um intervalo específico entre <code>-1,0</code> e <code>1,0</code> em todos os 3 eixos (<code>x</code>, <code>y</code> e <code>z</code>). Todas as coordenadas dentro desse intervalo, que é chamado <def>normalized device coordinates</def>, serão visíveis na tela (e todas as coordenadas fora desta região não serão).
+Para começar a desenhar algo, precisamos primeiro fornecer ao OpenGL alguns dados de vértices de entrada. O OpenGL é uma biblioteca de gráficos 3D, portanto, todas as coordenadas que especificamos no OpenGL estão em 3D (coordenadas <code>x</code>, <code>y</code> e <code>z</code>). O OpenGL não transforma simplesmente todas as suas coordenadas 3D em pixels 2D na tela; Ele processa apenas coordenadas 3D quando elas estão em um intervalo específico entre <code>-1.0</code> e <code>1.0</code> em todos os 3 eixos (<code>x</code>, <code>y</code> e <code>z</code>). Todas as coordenadas dentro desse intervalo, que é chamado <def>normalized device coordinates</def>, serão visíveis na tela (e todas as coordenadas fora desta região não serão).
 
 Como queremos renderizar um único triângulo, devemos especificar um total de três vértices, com cada vértice tendo uma posição 3D. Nós os definimos em normalized device coordinates (a região visível do OpenGL) em um array de <code>floats</code>:
 
@@ -63,13 +63,13 @@ Como o OpenGL trabalha no espaço 3D, renderizamos um triângulo 2D com cada vé
 <strong>Normalized Device Coordinates (NDC)</strong>
 <br/>
 <p>
-Depois que suas coordenadas de vértice forem processadas no vertex shader, elas deverão estar em <def>coordenadas de dispositivo normalizadas</def>, um espaço pequeno onde os valores de <code>x</code>, <code>y</code> e <code>z</code> variam de <code>-1,0</code> a <code>1,0</code>. Quaisquer coordenadas que estiverem fora desse intervalo serão descartadas / cortadas e não serão visíveis na tela. Abaixo, você pode ver o triângulo especificado nas coordenadas normalizadas do dispositivo (ignorando o eixo <code>z</code>):
+Depois que suas coordenadas de vértice forem processadas no vertex shader, elas deverão estar em <def>coordenadas de dispositivo normalizadas</def>, um espaço pequeno onde os valores de <code>x</code>, <code>y</code> e <code>z</code> variam de <code>-1.0</code> a <code>1.0</code>. Quaisquer coordenadas que estiverem fora desse intervalo serão descartadas / cortadas e não serão visíveis na tela. Abaixo, você pode ver o triângulo especificado nas coordenadas normalizadas do dispositivo (ignorando o eixo <code>z</code>):
 </p>
 
 <img src="/assets/images/ndc.png" alt="Coordenadas de dispositivos normalizados 2D, como mostrado em um gráfico" class="clean">
 
 <p>
-Diferentemente das coordenadas comuns da tela, os pontos positivos do eixo y na direção superior e as coordenadas (<code>0,0</code>) estão no centro do gráfico, em vez de no canto superior esquerdo. Eventualmente, você deseja que todas as coordenadas (transformadas) estejam nesse espaço de coordenadas, caso contrário elas não serão visíveis.
+Diferentemente das coordenadas comuns da tela, os pontos positivos do eixo y na direção superior e as coordenadas (<code>0.0</code>) estão no centro do gráfico, em vez de no canto superior esquerdo. Eventualmente, você deseja que todas as coordenadas (transformadas) estejam nesse espaço de coordenadas, caso contrário elas não serão visíveis.
 </p>
 
 <p>
@@ -173,7 +173,7 @@ glCompileShader(vertexShader);
 
 A função <function>glShaderSource</function> recebe o shader object para compilar como seu primeiro argumento. O segundo argumento especifica quantas strings estamos passando como código-fonte, que é apenas uma. O terceiro parâmetro é o código fonte real do vertex shader e podemos deixar o quarto parâmetro como <var>NULL</var>.
 
-<note markdown="1">
+<note>
 É uma boa prática verificar se a compilação foi bem-sucedida após a chamada ao <function>glCompileShader</function> e, caso não, quais erros foram encontrados para que você possa corrigi-los. A verificação de erros em tempo de compilação é realizada da seguinte maneira:
 <br/>
 
