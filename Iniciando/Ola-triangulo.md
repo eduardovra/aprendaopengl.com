@@ -331,3 +331,74 @@ someOpenGLFunctionThatDrawsOurTriangle();
 ```
 
 Temos que repetir esse processo toda vez que queremos desenhar um objeto. Pode não parecer muito, mas imagine se tivermos mais de 5 vertex attributes e talvez centenas de objetos diferentes (o que não é incomum). Fazer o bind de buffer objects e configurar todos os vertex attributes para cada um desses objetos rapidamente se torna um processo complicado. E se houvesse alguma maneira de armazenar todas essas configurações de estado em um objeto e simplesmente fazendo o bind deste objeto restaurar seu estado ?
+
+### Vertex Array Object
+
+Um <def>vertex array object</def> (também conhecido como <def>VAO</def>), pode ser vinculado assim como um vertex buffer object e, quaisquer chamadas de vertex attribute subsequentes a partir desse ponto serão armazenadas dentro do VAO. Isso traz a vantagem de que, ao configurar ponteiros dos vertex attributes, você só precisa fazer essas chamadas uma vez e sempre que quisermos desenhar o objeto, podemos apenas fazer o bind do VAO correspondente. Isso torna a alternância entre diferentes dados de vértice e configurações de atributos tão fácil quanto fazer bind em um VAO diferente. Todo o estado que acabamos de definir é armazenado dentro do VAO.
+
+<warning>
+O Core OpenGL exige que usemos um VAO para que ele saiba o que fazer com nossas entradas de vértice. Se não conseguirmos vincular um VAO, o OpenGL provavelmente se recusará a desenhar qualquer coisa.
+</warning>
+
+Um vertex array object armazena o seguinte:
+
+* Chamadas para <function>glEnableVertexAttribArray</function> ou <function>glDisableVertexAttribArray</function>.
+* Configurações de vertex attributes via <function>glVertexAttribPointer</function>.
+* Vertex buffer objects associados a verex attributes usando chamadas para <function>glVertexAttribPointer</function>.
+
+![Imagem de como um VAO (Vertex Array Object) functiona e o que ele armazena no OpenGL](/assets/images/vertex_array_objects.png){: .clean}
+
+O processo para gerar um VAO é semelhante ao de um VBO:
+
+```cpp
+unsigned int VAO;
+glGenVertexArrays(1, &VAO);
+```
+
+Para usar um VAO, basta vincular o VAO usando <function>glBindVertexArray</function>. A partir desse ponto, devemos fazer o bind / configurar o(s) VBO(s) correspondente(s) e o(s) vertex attributes e ao fim desvincular o VAO para uso posterior. Assim que queremos desenhar um objeto, simplesmente fazemos o bind do VAO às configurações desejdas antes de desenhar o objeto e estamos prontos. No código, isso seria mais ou menos assim:
+
+```cpp
+// ..:: Initialization code (done once (unless your object frequently changes)) :: ..
+// 1. bind Vertex Array Object
+glBindVertexArray(VAO);
+// 2. copy our vertices array in a buffer for OpenGL to use
+glBindBuffer(GL_ARRAY_BUFFER, VBO);
+glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+// 3. then set our vertex attributes pointers
+glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+glEnableVertexAttribArray(0);  
+
+  
+[...]
+
+// ..:: Drawing code (in render loop) :: ..
+// 4. draw the object
+glUseProgram(shaderProgram);
+glBindVertexArray(VAO);
+someOpenGLFunctionThatDrawsOurTriangle(); 
+```
+
+E é isso aí! Tudo o que fizemos nos últimos milhões de páginas levou até esse momento, um VAO que armazena nossa configuração de vertex attribute e qual VBO usar. Geralmente, quando você tem vários objetos que deseja desenhar, primeiro gera / configura todos os VAOs (e, portanto, o VBO e attribute pointers necessários) e os armazena para uso posterior. No momento em que queremos desenhar um de nossos objetos, pegamos o VAO correspondente, fazemos o bind, desenhamos o objeto e fazemos o unbind do VAO.
+
+### O triângulo que estávamos esperando
+
+Para desenhar nossos objetos escolhidos, o OpenGL nos fornece a função <function>glDrawArrays</function> que desenha primitivas usando o shader atualmente ativo, a configuração de vertex attribute definida anteriormente e os dados de vértice da VBO (indiretamente vinculados pelo VAO).
+
+```cpp
+glUseProgram(shaderProgram);
+glBindVertexArray(VAO);
+glDrawArrays(GL_TRIANGLES, 0, 3);
+```
+
+A função <function>glDrawArrays</function> usa como primeiro argumento o tipo primitivo OpenGL que gostaríamos de desenhar. Desde o início eu disse que queríamos desenhar um triângulo, e como não gosto de mentir para você, passamos <var>GL_TRIANGLES</var>. O segundo argumento especifica o índice inicial do vertex array que gostaríamos de desenhar; deixamos isso em <code>0</code>. O último argumento especifica quantos vértices queremos desenhar, que é <code>3</code> (renderizamos apenas um triângulo a partir de nossos dados, que tem exatamente 3 vértices).
+
+Agora tente compilar o código e siga o caminho inverso, se houver algum erro. Assim que seu programa compilar, você deverá ver o seguinte resultado:
+
+![Uma imagem de um triângulo básico renderizado no OpenGL moderno](/assets/images/hellotriangle.png){: .clean style="width:600px"}
+
+O código fonte completo do programa pode ser encontrado [aqui](https://learnopengl.com/code_viewer_gh.php?code=src/1.getting_started/2.1.hello_triangle/hello_triangle.cpp).
+
+Se o seu resultado não parecer o mesmo, você provavelmente fez algo errado ao longo do caminho, portanto verifique o código fonte completo e veja se deixou passar alguma coisa.
+
+##  Element Buffer Objects
+
