@@ -31,11 +31,12 @@ lang: pt-br
 
 # Build settings
 #theme: just-the-docs
-remote_theme: pmarsceill/just-the-docs
+remote_theme: pmarsceill/just-the-docs@v0.2.9
 plugins:
   #- jekyll-feed
   #- jekyll-sitemap
   - jekyll-seo-tag
+  - jekyll-remote-theme
 
 # Aux links for the upper right navigation
 aux_links:
