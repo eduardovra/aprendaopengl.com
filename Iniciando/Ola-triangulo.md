@@ -5,6 +5,8 @@ nav_order: 6
 parent: Iniciando
 ---
 
+# Olá Triângulo
+
 No OpenGL, tudo está no espaço 3D, mas a tela ou a janela é uma matriz de pixels 2D, portanto grande parte do trabalho do OpenGL é sobre a transformação de todas as coordenadas 3D em pixels 2D que cabem na tela. O processo de transformação de coordenadas 3D em pixels 2D é gerenciado pelo <def>pipeline gráfico</def> do OpenGL. O pipeline gráfico pode ser dividido em duas grandes partes: a primeira transforma suas coordenadas 3D em coordenadas 2D e a segunda parte transforma as coordenadas 2D em pixels coloridos reais. Neste capítulo, discutiremos brevemente o pipeline gráfico e como podemos usá-lo em nosso benefício para criar pixels sofisticados.
 
 O pipeline gráfico toma como entrada um conjunto de coordenadas 3D e as transforma em pixels 2D coloridos na tela. O pipeline gráfico pode ser dividido em várias etapas, nas quais cada etapa requer a saída da etapa anterior como entrada. Todas essas etapas são altamente especializadas (possuem uma função específica) e podem ser facilmente executadas em paralelo. Devido à sua natureza paralela, as placas gráficas atuais possuem milhares de pequenos núcleos de processamento para processar rapidamente seus dados no pipeline gráfico. Os núcleos de processamento executam pequenos programas na GPU para cada etapa do pipeline. Esses pequenos programas são chamados de <def>shaders</def>.

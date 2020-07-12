@@ -31,7 +31,7 @@ lang: pt-br
 
 # Build settings
 #theme: just-the-docs
-remote_theme: pmarsceill/just-the-docs@v0.2.9
+remote_theme: pmarsceill/just-the-docs@v0.2.8
 plugins:
   #- jekyll-feed
   #- jekyll-sitemap

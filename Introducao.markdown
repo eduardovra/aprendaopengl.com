@@ -4,7 +4,7 @@
 
 layout: page
 title: Introdução
-nav_order: 1
+nav_order: 2
 ---
 
 Já que você veio aqui, provavelmente quer aprender o funcionamento interno da computação gráfica e fazer todas as coisas legais que a galera faz por conta própria. Fazer coisas por si mesmo é extremamente divertido e útil, e te dá a possibilidade de entender de programação gráfica. Contudo, existem algumas coisas que precisam ser levadas em consideração antes de iniciar a sua jornada.
@@ -49,10 +49,4 @@ Algumas palavras são exibidas com uma cor diferente para deixar muito claro que
 * <fun>Estrutura do programa</fun>: palavras em vermelho definem nomes de funções ou nomes de classes.
 * <var>Variáveis</var>: palavras em azul especificam variáveis, incluindo todo as constantes do OpenGL.
 
-### Referências a funções do OpenGL
-
-TODO Ver possibilidade
-
-A particularly well appreciated feature of LearnOpenGL is the ability to review most of OpenGL's functions wherever they show up in the content. Whenever a function is found in the content that is documented at the website, the function will show up with a slightly noticeable underline. You can hover the mouse over the function and after a small interval, a pop-up window will show relevant information about this function including a nice overview of what the function actually does. Hover your mouse over glEnable to see it in action.
-
-Now that you got a bit of a feel of the structure of the site, hop over to the Getting Started section to start your journey in OpenGL!
+Agora que você já tem uma ideia da estrutura do site, vá para a seção [Iniciando](/Iniciando) para começar sua jornada no OpenGL!
