@@ -4,6 +4,7 @@
 
 layout: home
 title: Home
+comments: true
 ---
 
 # AprendaOpenGL.com
