@@ -7,6 +7,8 @@ title: Bem vindo ao OpenGL
 nav_order: 1
 ---
 
+# Bem vindo ao OpenGL
+
 Bem vindo(a) a minha humilde tentativa de proporcionar uma plataforma de ensino bem desenvolvida para a API gráfica chamada OpenGL.
 Se você está tentando aprender OpenGL para fins acadêmicos, buscando uma carreira ou simplismente procurando um _Hobby_, este site vai te ensinar o básico, intermediário e todo o conhecimento avançado usando OpenGL **moderno** (_core-profile_).
 O objetivo do AprendaOpenGL é mostrar a você tudo que existe em OpenGL moderno de uma forma fácil de compreender com exemplos claros, fornecendo ainda uma referência útil para estudos futuros.

@@ -8,6 +8,8 @@ nav_order: 2
 comments: true
 ---
 
+# Introdução
+
 Já que você veio aqui, provavelmente quer aprender o funcionamento interno da computação gráfica e fazer todas as coisas legais que a galera faz por conta própria. Fazer coisas por si mesmo é extremamente divertido e útil, e te dá a possibilidade de entender de programação gráfica. Contudo, existem algumas coisas que precisam ser levadas em consideração antes de iniciar a sua jornada.
 
 ## Pré-requisitos

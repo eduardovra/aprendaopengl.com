@@ -5,6 +5,8 @@ nav_order: 5
 parent: Iniciando
 ---
 
+# Olá Janela
+
 Vamos ver se conseguimos colocar o GLFW em funcionamento. Primeiro, crie um arquivo <code>.cpp</code> e adicione as os seguintes includes na parte superior do arquivo recém-criado.
 
 ```cpp

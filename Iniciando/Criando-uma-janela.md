@@ -5,6 +5,8 @@ nav_order: 4
 parent: Iniciando
 ---
 
+# Criando uma janela
+
 A primeira coisa que precisamos fazer antes de começar a criar gráficos incríveis é criar um contexto OpenGL e uma janela da aplicação para desenhar. Contudo, estas operações são específicas de cada sistema operacional, e o OpenGL propositalmente tenta se abstrair destas operações. Isso significa que, precisamos criar uma janela, definir um contexto, e gerenciar as entradas do usuário por nós mesmos.
 
 Por sorte, existem diversas bibliotecas por aí que fornecem a funcionalidade que estamos procurando, e algumas focadas especificamente no OpenGL. Estas bibliotecas nos poupam do trabalho de ter que lidar com os detalhes de cada sistema operacional, e nos fornecem uma janela e um contexto do OpenGL pronto para renderização. Algumas das bibliotecas mais populares são GLUT, SDL, SFML e GLFW. No AprendaOpenGL nós vamos utilizar a GLFW. Fique a vontade para utilizar qualquer uma das outras bibliotecas, o _setup_ da maioria é similar ao da GLFW.
